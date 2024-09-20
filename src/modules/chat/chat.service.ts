@@ -52,6 +52,26 @@ export class ChatService {
     return this.prisma.chat.findMany();
   }
 
+  async getUserChats(userId: string) {
+    const user = await this.userService.findOne(userId);
+
+    try {
+      const chats = await this.prisma.chat.findMany({
+        where: {
+          members: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+      });
+
+      return chats;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   async delete(id: string) {
     try {
       await this.prisma.chat.delete({ where: { id } });

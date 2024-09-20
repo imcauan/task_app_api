@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/infra/prisma/Prisma.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { TaskStatus } from './enums/task-status.enum';
 
 @Injectable()
 export class TaskService {
@@ -47,10 +48,16 @@ export class TaskService {
     }
   }
 
-  async getNewTaskChartData(user_id: string) {
-    console.log(user_id);
-
+  async getCompletedTaskChartData(user_id: string) {
     const chartData = [];
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        user_id,
+      },
+    });
+
+    const completedTasks = tasks.filter((t) => t.status === TaskStatus.DONE);
+
     const months = {
       0: 'January',
       1: 'February',
@@ -66,20 +73,13 @@ export class TaskService {
       11: 'December',
     };
 
-    const tasks = await this.prisma.task.findMany({
-      where: {
-        user_id,
-      },
-    });
-
     for (let i = 0; i <= 11; i++) {
       chartData.push({
         month: months[i],
-        tasks: [...tasks.filter((t) => t.createdAt.getMonth() === i)].length,
+        tasks: [...completedTasks.filter((t) => t.createdAt.getMonth() === i)]
+          .length,
       });
     }
-
-    console.log(chartData);
 
     return chartData;
   }

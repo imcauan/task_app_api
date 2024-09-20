@@ -30,8 +30,8 @@ export class TaskController {
   }
 
   @Get('chart/:user_id')
-  async getNewTaskChartData(@Param('user_id') user_id: string) {
-    return this.taskService.getNewTaskChartData(user_id);
+  async getCompletedTaskChartData(@Param('user_id') user_id: string) {
+    return this.taskService.getCompletedTaskChartData(user_id);
   }
 
   @Get(':id')

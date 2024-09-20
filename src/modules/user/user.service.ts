@@ -44,7 +44,9 @@ export class UserService {
 
   async findOne(id: string) {
     try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      });
 
       if (!user) {
         throw new NotFoundException('User not found.');
@@ -64,13 +66,24 @@ export class UserService {
     }
   }
 
-  async update(id: string, data: UpdateUserDto) {
-    const user = await this.findOne(id);
+  async exists(id: string) {
+    if ((await this.prisma.user.count({ where: { id } })) > 0) {
+      return true;
+    }
 
+    return false;
+  }
+
+  async update(id: string, { email, name, password }: UpdateUserDto) {
+    const user = await this.findOne(id);
     try {
       await this.prisma.user.update({
         where: { id: user.id },
-        data,
+        data: {
+          email: email ?? user.email,
+          name: name ?? user.name,
+          password: password ?? user.password,
+        },
       });
     } catch (error) {
       throw new BadRequestException(error);

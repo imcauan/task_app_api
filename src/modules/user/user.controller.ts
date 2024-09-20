@@ -50,7 +50,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  async update(@ParamId() id: string, data: UpdateUserDto) {
+  async update(@ParamId() id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(id, data);
   }
 

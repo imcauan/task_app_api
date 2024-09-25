@@ -1,14 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateChatDto } from './dtos/create-chat.dto';
 import { ChatService } from './chat.service';
 import { ParamId } from 'src/decorators/param-id.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('chat')
+@UseGuards(AuthGuard)
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
   async create(@Body() data: CreateChatDto) {
+    console.log(data);
     return this.chatService.create(data);
   }
 
@@ -22,7 +33,7 @@ export class ChatController {
     return this.chatService.findOne(id);
   }
 
-  @Get(':user_id')
+  @Get('user/:user_id')
   async getUserChats(@Param('user_id') user_id: string) {
     return this.chatService.getUserChats(user_id);
   }

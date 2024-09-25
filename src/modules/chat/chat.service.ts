@@ -15,21 +15,18 @@ export class ChatService {
   ) {}
 
   async create(data: CreateChatDto) {
-    const receiverUser = await this.userService.findOne(data.receiverId);
-    const senderUser = await this.userService.findOne(data.senderId);
+    const receiverUser = await this.prisma.user.findUnique({
+      where: { id: data.receiverId },
+    });
+    const senderUser = await this.prisma.user.findUnique({
+      where: { id: data.senderId },
+    });
 
     try {
       await this.prisma.chat.create({
         data: {
           members: {
-            create: [
-              {
-                ...senderUser,
-              },
-              {
-                ...receiverUser,
-              },
-            ],
+            create: [{ ...senderUser }, { ...receiverUser }],
           },
         },
       });
@@ -39,7 +36,10 @@ export class ChatService {
   }
 
   async findOne(id: string) {
-    const chat = await this.prisma.chat.findUnique({ where: { id } });
+    const chat = await this.prisma.chat.findUnique({
+      where: { id },
+      include: { messages: true, members: true },
+    });
 
     if (!chat) {
       throw new NotFoundException('Chat not found');
@@ -57,6 +57,10 @@ export class ChatService {
 
     try {
       const chats = await this.prisma.chat.findMany({
+        include: {
+          members: true,
+          messages: true,
+        },
         where: {
           members: {
             some: {

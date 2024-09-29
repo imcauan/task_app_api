@@ -22,16 +22,29 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async register(image: Express.Multer.File, data: AuthRegisterDto) {
-    if (
-      (await this.PrismaClient.user.count({
-        where: { email: data.email },
-      })) > 0
-    ) {
-      throw new ConflictException('A user with this email already exists!');
+  async register(data: AuthRegisterDto) {
+    await this.userService.exists(data.email);
+
+    await this.userService.create(data);
+
+    return this.login(data);
+  }
+
+  async registerUserByInvite(data: AuthRegisterDto) {
+    const user = await this.PrismaClient.user.findFirst({
+      where: { email: data.email },
+    });
+
+    if (user) {
+      throw new ConflictException('User already exists');
     }
 
-    await this.userService.create(image, data);
+    await this.userService.createUserByInvite({
+      email: data.email,
+      name: data.name,
+      password: data.password,
+      workspaceId: data.workspaceId,
+    });
 
     return this.login({ email: data.email, password: data.password });
   }

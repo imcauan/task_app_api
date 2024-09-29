@@ -10,19 +10,34 @@ import { CryptoService } from 'src/infra/crypto/Crypto.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { FileService } from '../file/file.service';
+import { CreateUserByInviteDto } from './dtos/create-user-by-invite.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cryptoService: CryptoService,
-    private readonly fileService: FileService,
   ) {}
 
-  async create(image: Express.Multer.File, data: CreateUserDto) {
-    if ((await this.prisma.user.count({ where: { email: data.email } })) > 0) {
-      throw new ForbiddenException('User already exists!');
+  async create(data: CreateUserDto) {
+    await this.exists(data.email);
+    const hashedPassword = await this.cryptoService.hash(data.password);
+
+    try {
+      await this.prisma.user.create({
+        data: {
+          email: data.email,
+          name: data.name,
+          password: hashedPassword,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
     }
+  }
+
+  async createUserByInvite(data: CreateUserByInviteDto) {
+    await this.exists(data.email);
 
     const hashedPassword = await this.cryptoService.hash(data.password);
 
@@ -31,21 +46,36 @@ export class UserService {
         data: {
           email: data.email,
           name: data.name,
-          image: image.filename,
           password: hashedPassword,
+          workspaces: {
+            connect: {
+              id: data.workspaceId,
+            },
+          },
         },
       });
-
-      this.fileService.uploadPhoto(image);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    } catch (error) {}
   }
 
   async findOne(id: string) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id },
+        include: {
+          workspaces: {
+            include: {
+              tasks: true,
+              members: true,
+            },
+          },
+          chats: {
+            include: {
+              members: true,
+              messages: true,
+            },
+          },
+          tasks: true,
+        },
       });
 
       if (!user) {
@@ -66,8 +96,14 @@ export class UserService {
     }
   }
 
-  async exists(id: string) {
-    if ((await this.prisma.user.count({ where: { id } })) > 0) {
+  async exists(email: string) {
+    const userExists = await this.prisma.user.count({
+      where: { email: { contains: email } },
+    });
+
+    console.log(userExists);
+
+    if (userExists > 0) {
       return true;
     }
 

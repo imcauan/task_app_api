@@ -10,4 +10,8 @@ export class AuthRegisterDto extends AuthLoginDto {
 
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  workspaceId?: string;
 }

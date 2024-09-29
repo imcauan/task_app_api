@@ -5,4 +5,5 @@ export class CreateTaskDto {
   description: string;
   user_id: string;
   status: TTaskStatus;
+  workspaceId?: string;
 }

@@ -19,6 +19,7 @@ export class TaskService {
           name: data.name,
           user_id: data.user_id,
           description: data.description,
+          workspaceId: data.workspaceId,
         },
       });
     } catch (error) {
@@ -43,6 +44,14 @@ export class TaskService {
       }
 
       return task;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getUserTasks(id: string) {
+    try {
+      return this.prisma.task.findMany({ where: { user_id: id } });
     } catch (error) {
       throw new BadRequestException(error);
     }

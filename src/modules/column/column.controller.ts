@@ -6,13 +6,11 @@ import {
   Param,
   Patch,
   Post,
-  Put,
 } from '@nestjs/common';
 import { CreateColumnDto } from '@/modules/column/dtos/create-column.dto';
 import { ColumnService } from '@/modules/column/column.service';
 import { ParamId } from '@/decorators/param-id.decorator';
 import { UpdateColumnDto } from '@/modules/column/dtos/update-column.dto';
-import { UpdateUserColumnsDto } from './dtos/update-user-columns.dto';
 import { UpdateColumnTasksDto } from './dtos/update-column-tasks.dto';
 
 @Controller('column')

@@ -9,7 +9,6 @@ import { PrismaService } from '@/infra/prisma/Prisma.service';
 import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dto';
 import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
 import { UserService } from '@/modules/user/user.service';
-import { UpdateColumnTasksDto } from '@/modules/column/dtos/update-column-tasks.dto';
 import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
 
 @Injectable()
@@ -63,6 +62,7 @@ export class WorkspaceService {
 
     try {
       await this.prisma.workspace.findMany({
+        take: 10,
         where: {
           OR: [
             { owner_id: id },

@@ -1,5 +1,3 @@
-import { Task } from '@prisma/client';
-
 export class UpdateColumnTasksDto {
   id: string;
   tasks: TasksToUpdate[];

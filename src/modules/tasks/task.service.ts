@@ -56,14 +56,6 @@ export class TaskService {
     }
   }
 
-  async getUserTasks(id: string) {
-    try {
-      return this.prisma.task.findMany({ where: { user_id: id } });
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
-
   async getCreatedTaskChartData(user_id: string) {
     const chartData = [];
     const tasks = await this.prisma.task.findMany({

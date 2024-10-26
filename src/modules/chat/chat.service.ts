@@ -57,6 +57,7 @@ export class ChatService {
 
     try {
       const chats = await this.prisma.chat.findMany({
+        take: 10,
         include: {
           members: true,
           messages: true,

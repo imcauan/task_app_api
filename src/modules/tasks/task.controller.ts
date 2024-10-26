@@ -34,11 +34,6 @@ export class TaskController {
     return this.taskService.getCreatedTaskChartData(user_id);
   }
 
-  @Get('user/:user_id')
-  async getUserTasks(@Param('user_id') user_id: string) {
-    return this.taskService.getUserTasks(user_id);
-  }
-
   @Get(':id')
   async findOne(@ParamId() id: string) {
     return this.taskService.findOne(id);

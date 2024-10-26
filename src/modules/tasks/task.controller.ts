@@ -8,11 +8,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { ParamId } from 'src/decorators/param-id.decorator';
-import { UpdateTaskDto } from './dtos/update-task.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { TaskService } from '@/modules/tasks/task.service';
+import { CreateTaskDto } from '@/modules/tasks/dtos/create-task.dto';
+import { ParamId } from '@/decorators/param-id.decorator';
+import { UpdateTaskDto } from '@/modules/tasks/dtos/update-task.dto';
+import { AuthGuard } from '@/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('task')
@@ -30,8 +30,8 @@ export class TaskController {
   }
 
   @Get('chart/:user_id')
-  async getCompletedTaskChartData(@Param('user_id') user_id: string) {
-    return this.taskService.getCompletedTaskChartData(user_id);
+  async getCreatedTaskChartData(@Param('user_id') user_id: string) {
+    return this.taskService.getCreatedTaskChartData(user_id);
   }
 
   @Get('user/:user_id')

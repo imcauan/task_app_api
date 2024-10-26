@@ -6,31 +6,34 @@ import {
 import { CreateColumnDto } from './dtos/create-column.dto';
 import { PrismaService } from 'src/infra/prisma/Prisma.service';
 import { UpdateColumnDto } from './dtos/update-column.dto';
-import { UserService } from '../user/user.service';
-import { UpdateUserColumnsDto } from './dtos/update-user-columns.dto';
-import { Column } from '@prisma/client';
+import { UpdateColumnTasksDto } from './dtos/update-column-tasks.dto';
+import { WorkspaceService } from '../workspace/workspace.service';
 
 @Injectable()
 export class ColumnService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userService: UserService,
+    private readonly workspaceService: WorkspaceService,
   ) {}
 
   async create(data: CreateColumnDto) {
     try {
-      const userColumns = await this.findAllUserColumns(data.userId);
+      const workspace = await this.workspaceService.findOne(data.workspaceId);
 
       const column = await this.prisma.column.create({
         data: {
-          title: `Column ${userColumns.length + 1}`,
+          title: `Column ${workspace.columns.length + 1}`,
+          order: workspace.columns.length,
           ...data,
+        },
+        include: {
+          tasks: true,
         },
       });
 
       return column;
     } catch (error) {
-      throw new BadRequestException(error);
+      console.log(error);
     }
   }
 
@@ -59,7 +62,10 @@ export class ColumnService {
 
   async findOne(id: string) {
     try {
-      const column = await this.prisma.column.findUnique({ where: { id } });
+      const column = await this.prisma.column.findUnique({
+        where: { id },
+        include: { tasks: true },
+      });
 
       if (!column) {
         throw new NotFoundException('Column not found!');
@@ -77,7 +83,7 @@ export class ColumnService {
         throw new NotFoundException('Column not found!');
       }
 
-      await this.prisma.column.update({
+      return this.prisma.column.update({
         where: { id: data.id },
         data: { ...data },
       });
@@ -86,30 +92,41 @@ export class ColumnService {
     }
   }
 
-  async updateUserColumns(id: string, data: UpdateUserColumnsDto) {
-    const user = await this.userService.findOne(id);
+  async updateColumnTasks(data: UpdateColumnTasksDto) {
+    const column = await this.findOne(data.id);
 
-    console.log(data.columns);
-
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        columns: {
-          set: data.columns.map((col) => ({
-            ...col,
-          })),
+    try {
+      await this.prisma.column.update({
+        where: { id: column.id },
+        data: {
+          tasks: {
+            update: data.tasks.map((task) => ({
+              where: { id: task.id },
+              data: {
+                order: task.order,
+                ...task,
+              },
+            })),
+          },
         },
-      },
-    });
+        include: {
+          tasks: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async delete(id: string) {
-    try {
-      if (!(await this.exists(id))) {
-        throw new NotFoundException('Column not found!');
-      }
+    const column = await this.findOne(id);
 
-      await this.prisma.column.delete({ where: { id } });
+    if (column.tasks.length > 0) {
+      await this.prisma.task.deleteMany({ where: { column_id: column.id } });
+    }
+
+    try {
+      return this.prisma.column.delete({ where: { id: column.id } });
     } catch (error) {
       throw new BadRequestException(error);
     }

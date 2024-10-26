@@ -1,9 +1,18 @@
-export type TTaskStatus = 'todo' | 'doing' | 'done';
+import { IsString } from 'class-validator';
 
 export class CreateTaskDto {
+  @IsString()
   name: string;
+
+  @IsString()
   description: string;
+
+  @IsString()
   user_id: string;
-  status: TTaskStatus;
+
+  @IsString()
+  columnId: string;
+
+  @IsString()
   workspaceId?: string;
 }

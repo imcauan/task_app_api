@@ -1,7 +1,11 @@
-import { Column } from '@prisma/client';
 import { IsArray, IsString } from 'class-validator';
 
 export class UpdateUserColumnsDto {
+  id: string;
+
   @IsArray()
-  columns: Column[];
+  columns: {
+    id: string;
+    order: number;
+  }[];
 }

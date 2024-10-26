@@ -13,6 +13,7 @@ import { ColumnService } from '@/modules/column/column.service';
 import { ParamId } from '@/decorators/param-id.decorator';
 import { UpdateColumnDto } from '@/modules/column/dtos/update-column.dto';
 import { UpdateUserColumnsDto } from './dtos/update-user-columns.dto';
+import { UpdateColumnTasksDto } from './dtos/update-column-tasks.dto';
 
 @Controller('column')
 export class ColumnController {
@@ -43,16 +44,20 @@ export class ColumnController {
     return this.columnService.update(data);
   }
 
-  @Patch('user/:id')
-  async updateUserColumns(
-    @ParamId() id: string,
-    @Body() data: UpdateUserColumnsDto,
-  ) {
-    return this.columnService.updateUserColumns(id, data);
+  @Patch('user/tasks')
+  async updateColumnTasks(@Body() data: UpdateColumnTasksDto) {
+    console.log(data);
+    return this.columnService.updateColumnTasks(data);
+  }
+
+  @Patch('tasks/:id')
+  async updateColumnTask(@ParamId() id: string, data: UpdateColumnTasksDto) {
+    return this.columnService.updateColumnTasks(data);
   }
 
   @Delete(':id')
   async delete(@ParamId() id: string) {
+    console.log(id);
     return this.columnService.delete(id);
   }
 }

@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { TaskController } from './task.controller';
-import { PrismaModule } from 'src/infra/prisma/Prisma.module';
-import { AuthModule } from '../auth/auth.module';
-import { UserModule } from '../user/user.module';
+import { TaskService } from '@/modules/tasks/task.service';
+import { TaskController } from '@/modules/tasks/task.controller';
+import { PrismaModule } from '@/infra/prisma/Prisma.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { UserModule } from '@/modules/user/user.module';
+import { ColumnModule } from '../column/column.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule],
+  imports: [PrismaModule, AuthModule, UserModule, ColumnModule],
   controllers: [TaskController],
   exports: [TaskService],
   providers: [TaskService],

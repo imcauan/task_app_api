@@ -3,23 +3,30 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/infra/prisma/Prisma.service';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { UpdateTaskDto } from './dtos/update-task.dto';
-import { TaskStatus } from './enums/task-status.enum';
+import { PrismaService } from '@/infra/prisma/Prisma.service';
+import { CreateTaskDto } from '@/modules/tasks/dtos/create-task.dto';
+import { UpdateTaskDto } from '@/modules/tasks/dtos/update-task.dto';
+import { ColumnService } from '../column/column.service';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly columnService: ColumnService,
+  ) {}
 
   async create(data: CreateTaskDto) {
+    const column = await this.columnService.findOne(data.columnId);
+    const { tasks } = column;
+
     try {
-      await this.prisma.task.create({
+      return this.prisma.task.create({
         data: {
           name: data.name,
           user_id: data.user_id,
+          order: tasks.length + 1,
+          column_id: data.columnId,
           description: data.description,
-          workspaceId: data.workspaceId,
         },
       });
     } catch (error) {
@@ -57,15 +64,13 @@ export class TaskService {
     }
   }
 
-  async getCompletedTaskChartData(user_id: string) {
+  async getCreatedTaskChartData(user_id: string) {
     const chartData = [];
     const tasks = await this.prisma.task.findMany({
       where: {
         user_id,
       },
     });
-
-    const completedTasks = tasks.filter((t) => t.status === TaskStatus.DONE);
 
     const months = {
       0: 'January',
@@ -85,8 +90,7 @@ export class TaskService {
     for (let i = 0; i <= 11; i++) {
       chartData.push({
         month: months[i],
-        tasks: [...completedTasks.filter((t) => t.createdAt.getMonth() === i)]
-          .length,
+        tasks: [...tasks.filter((t) => t.createdAt.getMonth() === i)].length,
       });
     }
 
@@ -101,7 +105,6 @@ export class TaskService {
         where: { id },
         data: {
           name: data.name || task.name,
-          status: +data.status,
           description: data.description || task.description,
           user_id: task.user_id,
         },

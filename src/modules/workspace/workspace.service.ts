@@ -1,17 +1,22 @@
 import {
   BadRequestException,
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
 } from '@nestjs/common';
-import { PrismaService } from 'src/infra/prisma/Prisma.service';
-import { CreateWorkspaceDto } from './dtos/create-workspace.dto';
-import { UpdateWorkspaceDto } from './dtos/update-workspace.dto';
-import { UserService } from '../user/user.service';
+import { PrismaService } from '@/infra/prisma/Prisma.service';
+import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dto';
+import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
+import { UserService } from '@/modules/user/user.service';
+import { UpdateColumnTasksDto } from '@/modules/column/dtos/update-column-tasks.dto';
+import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
@@ -41,9 +46,9 @@ export class WorkspaceService {
         where: { id },
         include: {
           members: true,
-          tasks: {
-            where: {
-              workspaceId: id,
+          columns: {
+            include: {
+              tasks: true,
             },
           },
         },
@@ -73,6 +78,33 @@ export class WorkspaceService {
       });
     } catch (error) {
       throw new BadRequestException(error);
+    }
+  }
+
+  async updateUserColumns(data: UpdateUserColumnsDto) {
+    const workspace = await this.findOne(data.id);
+
+    try {
+      return this.prisma.workspace.update({
+        where: { id: workspace.id },
+        data: {
+          columns: {
+            update: data.columns.map((column) => ({
+              where: {
+                id: column.id,
+              },
+              data: {
+                order: column.order,
+              },
+            })),
+          },
+        },
+        include: {
+          columns: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 

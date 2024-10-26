@@ -1,8 +1,17 @@
-import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
-import { CreateWorkspaceDto } from './dtos/create-workspace.dto';
-import { WorkspaceService } from './workspace.service';
-import { ParamId } from 'src/decorators/param-id.decorator';
-import { UpdateWorkspaceDto } from './dtos/update-workspace.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dto';
+import { WorkspaceService } from '@/modules/workspace/workspace.service';
+import { ParamId } from '@/decorators/param-id.decorator';
+import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
+import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -31,6 +40,11 @@ export class WorkspaceController {
   @Patch(':id')
   async update(@ParamId() id: string, @Body() data: UpdateWorkspaceDto) {
     return this.workspaceService.update(id, data);
+  }
+
+  @Put('user')
+  async updateUserColumns(@Body() data: UpdateUserColumnsDto) {
+    return this.workspaceService.updateUserColumns(data);
   }
 
   @Delete(':id')

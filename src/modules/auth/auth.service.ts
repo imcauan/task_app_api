@@ -5,13 +5,15 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 
-import { PrismaService } from '../../infra/prisma/Prisma.service';
-import { AuthLoginDto } from './dtos/auth-login.dto';
-import { JwtService } from '../../infra/jwt/Jwt.service';
-import { CryptoService } from '../../infra/crypto/Crypto.service';
-import { AuthRegisterDto } from './dtos/auth-register.dto';
-import { AuthPayloadDto } from '../../infra/jwt/dtos/auth-payload.dto';
-import { UserService } from '../user/user.service';
+import { PrismaService } from '@/infra/prisma/Prisma.service';
+import { AuthLoginDto } from '@/modules/auth/dtos/auth-login.dto';
+import { JwtService } from '@/infra/jwt/Jwt.service';
+import { CryptoService } from '@/infra/crypto/Crypto.service';
+import { AuthRegisterDto } from '@/modules/auth/dtos/auth-register.dto';
+import { AuthPayloadDto } from '@/infra/jwt/dtos/auth-payload.dto';
+import { UserService } from '@/modules/user/user.service';
+import { StripeService } from '@/modules/stripe/stripe.service';
+import { config } from '@/modules/stripe/config';
 
 @Injectable()
 export class AuthService {
@@ -20,20 +22,39 @@ export class AuthService {
     private readonly JWTService: JwtService,
     private readonly CryptoService: CryptoService,
     private readonly userService: UserService,
+    private readonly stripeService: StripeService,
   ) {}
 
   async register(data: AuthRegisterDto) {
-    await this.userService.exists(data.email);
+    if (await this.userService.exists(data.email))
+      throw new ConflictException('An user with this email already exists!');
 
     await this.userService.create(data);
+
+    const createdStripeCustomer = await this.stripeService.createStripeCustomer(
+      {
+        email: data.email,
+      },
+    );
+
+    const customerSubscription =
+      await this.stripeService.getCustomerSubscription(
+        createdStripeCustomer.id,
+      );
+
+    await this.stripeService.updateStripeData({
+      email: createdStripeCustomer.email,
+      stripeCustomerId: createdStripeCustomer.id,
+      stripeSubscriptionId: customerSubscription.data[0].id,
+      stripePriceId: config.stripe.plans.free.priceId,
+      stripeSubscriptionStatus: customerSubscription.data[0].status,
+    });
 
     return this.login(data);
   }
 
   async registerUserByInvite(data: AuthRegisterDto) {
-    const user = await this.PrismaClient.user.findFirst({
-      where: { email: data.email },
-    });
+    const user = await this.userService.findByEmail(data.email);
 
     if (user) {
       throw new ConflictException('User already exists');

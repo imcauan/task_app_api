@@ -3,19 +3,17 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
-import { ParamId } from 'src/decorators/param-id.decorator';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { UserService } from './user.service';
-import { CreateUserByInviteDto } from './dtos/create-user-by-invite.dto';
-
+import { ParamId } from '@/decorators/param-id.decorator';
+import { CreateUserDto } from '@/modules/user/dtos/create-user.dto';
+import { UpdateUserDto } from '@/modules/user/dtos/update-user.dto';
+import { UserService } from '@/modules/user/user.service';
+import { CreateUserByInviteDto } from '@/modules/user/dtos/create-user-by-invite.dto';
+import { UpdateStripeDto } from '@/modules/user/dtos/update-stripe.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -42,6 +40,15 @@ export class UserController {
   @Patch(':id')
   async update(@ParamId() id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(id, data);
+  }
+
+  @Patch('stripe/:email')
+  async updateStripeData(
+    @Param('email') email: string,
+    @Body() data: UpdateStripeDto,
+  ) {
+    console.log(data);
+    return this.userService.updateStripeData(data);
   }
 
   @Delete(':id')

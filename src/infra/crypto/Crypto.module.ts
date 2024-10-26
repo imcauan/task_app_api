@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CryptoService } from './Crypto.service';
+import { CryptoService } from '@/infra/crypto/Crypto.service';
 
 @Module({
   providers: [CryptoService],

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SendEmailDto } from './dtos/send-email.dto';
+import { SendEmailDto } from '@/modules/mail/dtos/send-email.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()

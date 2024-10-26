@@ -1,16 +1,18 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { PrismaModule } from 'src/infra/prisma/Prisma.module';
+import { PrismaModule } from '@/infra/prisma/Prisma.module';
 
-import { AuthModule } from '../auth/auth.module';
-import { CryptoModule } from 'src/infra/crypto/Crypto.module';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { FileModule } from '../file/file.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { CryptoModule } from '@/infra/crypto/Crypto.module';
+import { UserController } from '@/modules/user/user.controller';
+import { UserService } from '@/modules/user/user.service';
+import { FileModule } from '@/modules/file/file.module';
+import { WorkspaceModule } from '@/modules/workspace/workspace.module';
 
 @Module({
   imports: [
     PrismaModule,
     FileModule,
+    WorkspaceModule,
     CryptoModule,
     forwardRef(() => AuthModule),
   ],

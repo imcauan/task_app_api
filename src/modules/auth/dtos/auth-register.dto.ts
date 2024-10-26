@@ -1,5 +1,5 @@
-import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { AuthLoginDto } from './auth-login.dto';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { AuthLoginDto } from '@/modules/auth/dtos/auth-login.dto';
 
 export class AuthRegisterDto extends AuthLoginDto {
   @IsString()

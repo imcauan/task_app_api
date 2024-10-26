@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { WorkspaceController } from './workspace.controller';
-import { WorkspaceService } from './workspace.service';
-import { PrismaModule } from 'src/infra/prisma/Prisma.module';
-import { UserModule } from '../user/user.module';
+import { forwardRef, Module } from '@nestjs/common';
+import { WorkspaceController } from '@/modules/workspace/workspace.controller';
+import { WorkspaceService } from '@/modules/workspace/workspace.service';
+import { PrismaModule } from '@/infra/prisma/Prisma.module';
+import { UserModule } from '@/modules/user/user.module';
 
 @Module({
-  imports: [PrismaModule, UserModule],
+  imports: [forwardRef(() => UserModule), PrismaModule],
   controllers: [WorkspaceController],
   exports: [WorkspaceService],
   providers: [WorkspaceService],

@@ -14,16 +14,24 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  password  String
-  image     String?
-  tasks     Task[]
-  chats     Chat[]
-  messages  Message[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt()
+  id       String    @id @default(uuid())
+  name     String
+  email    String    @unique
+  password String
+  image    String?
+  tasks    Task[]
+  chats    Chat[]
+  messages Message[]
+  columns  Column[]
+
+  stripeCustomerId         String?
+  stripeSubscriptionId     String?
+  stripeSubscriptionStatus String?
+  stripePriceId            String?
+
+  workspaces Workspace[] @relation("WorkspaceMembers")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt()
 
   @@map("users")
 }
@@ -32,9 +40,11 @@ model Task {
   id          String   @id @default(uuid())
   name        String
   description String?
-  status      Int      @default(1)
+  order       Int?
   user_id     String
   user        User     @relation(fields: [user_id], references: [id])
+  column_id   String
+  column      Column   @relation(fields: [column_id], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
 
@@ -63,4 +73,31 @@ model Message {
   updatedAt DateTime @updatedAt
 
   @@map("messages")
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  owner_id  String
+  members   User[]   @relation("WorkspaceMembers")
+  columns   Column[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workspaces")
+}
+
+model Column {
+  id          String     @id @default(uuid())
+  title       String
+  userId      String
+  order       Int?
+  user        User       @relation(fields: [userId], references: [id])
+  tasks       Task[]
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("columns")
 }

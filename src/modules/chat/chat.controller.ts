@@ -7,10 +7,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CreateChatDto } from './dtos/create-chat.dto';
-import { ChatService } from './chat.service';
-import { ParamId } from 'src/decorators/param-id.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { CreateChatDto } from '@/modules/chat/dtos/create-chat.dto';
+import { ChatService } from '@/modules/chat/chat.service';
+import { ParamId } from '@/decorators/param-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 
 @Controller('chat')
 @UseGuards(AuthGuard)

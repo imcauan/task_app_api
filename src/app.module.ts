@@ -29,7 +29,7 @@ import { ColumnModule } from '@/modules/column/column.module';
     WorkspaceModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, '..', '.env'),
+      envFilePath: join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'storage'),

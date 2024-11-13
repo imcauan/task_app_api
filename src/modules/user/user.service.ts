@@ -166,6 +166,20 @@ export class UserService {
     }
   }
 
+  async updatePassword(id: string, password: string) {
+    const user = await this.findOne(id);
+    try {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: await this.cryptoService.hash(password),
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   async updateStripeData(data: UpdateStripeDto) {
     try {
       return this.prisma.user.update({

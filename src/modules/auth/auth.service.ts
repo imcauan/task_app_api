@@ -14,6 +14,9 @@ import { AuthPayloadDto } from '@/infra/jwt/dtos/auth-payload.dto';
 import { UserService } from '@/modules/user/user.service';
 import { StripeService } from '@/modules/stripe/stripe.service';
 import { config } from '@/modules/stripe/config';
+import { ForgotPasswordDto } from '@/modules/auth/dtos/forgot-password.dto';
+import { MailService } from '@/modules/mail/mail.service';
+import { ResetPasswordDto } from '@/modules/auth/dtos/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +26,7 @@ export class AuthService {
     private readonly CryptoService: CryptoService,
     private readonly userService: UserService,
     private readonly stripeService: StripeService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(data: AuthRegisterDto) {
@@ -98,6 +102,45 @@ export class AuthService {
     return {
       token: token,
     };
+  }
+
+  async sendEmailForgetPassword(data: ForgotPasswordDto) {
+    const user = await this.userService.findByEmail(data.email);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const token = await this.JWTService.sign<AuthPayloadDto>(
+      {
+        id: user.id,
+      },
+      '1h',
+    );
+
+    await this.mailService.sendEmailForgotPassword({
+      email: user.email,
+      token: token,
+    });
+  }
+
+  async reset(data: ResetPasswordDto) {
+    try {
+      const verifiedToken = await this.JWTService.verify<{ id: string }>(
+        data.token,
+      );
+
+      const user = await this.userService.findOne(verifiedToken.id);
+
+      await this.userService.updatePassword(user.id, data.password);
+
+      return this.login({
+        email: user.email,
+        password: data.password,
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   checkToken(token: string) {

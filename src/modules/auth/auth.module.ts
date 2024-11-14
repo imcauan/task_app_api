@@ -6,12 +6,14 @@ import { UserModule } from '@/modules/user/user.module';
 import { AuthController } from '@/modules/auth/auth.controller';
 import { AuthService } from '@/modules/auth/auth.service';
 import { StripeModule } from '@/modules/stripe/stripe.module';
+import { MailModule } from '@/modules/mail/mail.module';
 
 @Module({
   imports: [
     PrismaModule,
     JwtModule,
     CryptoModule,
+    MailModule,
     StripeModule,
     forwardRef(() => UserModule),
   ],

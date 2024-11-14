@@ -42,6 +42,7 @@ model Task {
   description String?
   order       Int?
   user_id     String
+  priority    String   @default("LOW")
   user        User     @relation(fields: [user_id], references: [id])
   column_id   String
   column      Column   @relation(fields: [column_id], references: [id])
@@ -79,6 +80,7 @@ model Workspace {
   id        String   @id @default(uuid())
   name      String
   owner_id  String
+  priority  String   @default("LOW")
   members   User[]   @relation("WorkspaceMembers")
   columns   Column[]
   createdAt DateTime @default(now())

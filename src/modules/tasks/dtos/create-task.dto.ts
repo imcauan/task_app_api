@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { TaskPriority } from '@/modules/tasks/enums/task-priority.enum';
+import { IsEnum, IsString } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -9,6 +10,9 @@ export class CreateTaskDto {
 
   @IsString()
   user_id: string;
+
+  @IsEnum(TaskPriority)
+  priority: TaskPriority;
 
   @IsString()
   columnId: string;

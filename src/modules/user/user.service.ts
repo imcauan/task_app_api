@@ -10,6 +10,7 @@ import { UpdateUserDto } from '@/modules/user/dtos/update-user.dto';
 import { CreateUserByInviteDto } from '@/modules/user/dtos/create-user-by-invite.dto';
 import { UpdateStripeDto } from '@/modules/user/dtos/update-stripe.dto';
 import { WorkspaceService } from '../workspace/workspace.service';
+import { WorkspacePriority } from '@/modules/workspace/enums/workspace-priority.enum';
 
 @Injectable()
 export class UserService {
@@ -32,6 +33,7 @@ export class UserService {
 
       await this.workspaceService.create({
         name: `${user.name} personal.`,
+        priority: WorkspacePriority.LOW,
         userId: user.id,
       });
     } catch (error) {

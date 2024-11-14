@@ -12,6 +12,7 @@ import { WorkspaceService } from '@/modules/workspace/workspace.service';
 import { ParamId } from '@/decorators/param-id.decorator';
 import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
 import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
+import { DeleteUserFromWorkspaceDto } from '@/modules/workspace/dtos/delete-user-from-workspace.dto';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -20,6 +21,11 @@ export class WorkspaceController {
   @Post()
   async create(@Body() data: CreateWorkspaceDto) {
     return this.workspaceService.create(data);
+  }
+
+  @Post('user')
+  async deleteUserFromWorkspace(@Body() data: DeleteUserFromWorkspaceDto) {
+    return this.workspaceService.deleteUserFromWorkspace(data);
   }
 
   @Get()

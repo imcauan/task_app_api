@@ -10,7 +10,9 @@ import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dt
 import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
 import { UserService } from '@/modules/user/user.service';
 import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
+import { DeleteUserFromWorkspaceDto } from '@/modules/workspace/dtos/delete-user-from-workspace.dto';
 
+// TODO: fix update task columns
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -19,7 +21,7 @@ export class WorkspaceService {
     private readonly userService: UserService,
   ) {}
 
-  async create({ name, userId }: CreateWorkspaceDto) {
+  async create({ name, userId, priority }: CreateWorkspaceDto) {
     if (await this.exists(name)) {
       throw new ConflictException('This workspace already exists!');
     }
@@ -29,6 +31,7 @@ export class WorkspaceService {
         data: {
           name: name,
           owner_id: userId,
+          priority: priority,
           members: {
             connect: [{ id: userId }],
           },
@@ -62,7 +65,6 @@ export class WorkspaceService {
 
     try {
       await this.prisma.workspace.findMany({
-        take: 10,
         where: {
           OR: [
             { owner_id: id },
@@ -142,6 +144,25 @@ export class WorkspaceService {
     try {
       await this.prisma.workspace.delete({
         where: { id },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async deleteUserFromWorkspace(data: DeleteUserFromWorkspaceDto) {
+    const workspace = await this.findOne(data.workspaceId);
+
+    try {
+      await this.prisma.workspace.update({
+        where: { id: workspace.id },
+        data: {
+          members: {
+            delete: {
+              email: data.userEmail,
+            },
+          },
+        },
       });
     } catch (error) {
       throw new BadRequestException(error);

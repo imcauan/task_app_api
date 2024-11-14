@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { WorkspacePriority } from '@/modules/workspace/enums/workspace-priority.enum';
+import { IsEnum, IsString } from 'class-validator';
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -6,4 +7,7 @@ export class CreateWorkspaceDto {
 
   @IsString()
   userId: string;
+
+  @IsEnum(WorkspacePriority)
+  priority: WorkspacePriority;
 }

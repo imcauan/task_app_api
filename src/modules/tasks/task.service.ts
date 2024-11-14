@@ -25,6 +25,7 @@ export class TaskService {
           name: data.name,
           user_id: data.user_id,
           order: tasks.length + 1,
+          priority: data.priority,
           column_id: data.columnId,
           description: data.description,
         },

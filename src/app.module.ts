@@ -14,9 +14,8 @@ import { MailModule } from '@/modules/mail/mail.module';
 import { StripeModule } from '@/modules/stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
 import { ColumnModule } from '@/modules/column/column.module';
-import * as dotenv from 'dotenv';
+import { configuration } from '@/common/config/configuration';
 
-dotenv.config();
 @Module({
   imports: [
     AuthModule,
@@ -30,7 +29,9 @@ dotenv.config();
     UserModule,
     WorkspaceModule,
     ConfigModule.forRoot({
-      envFilePath: join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
+      envFilePath: join(`${process.cwd()}/.env.${process.env.NODE_ENV}`),
+      load: [configuration],
+      isGlobal: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'storage'),

@@ -7,7 +7,7 @@ import { UpdateStripeDto } from '@/modules/user/dtos/update-stripe.dto';
 import { UserService } from '@/modules/user/user.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET as string, {
-  apiVersion: '2024-09-30.acacia',
+  apiVersion: '2024-10-28.acacia',
 });
 
 @Injectable()

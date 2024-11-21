@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "migrate": "cross-env NODE_ENV=development npx prisma migrate dev",
     "migrate:prod": "cross-env NODE_ENV=production npx prisma migrate deploy",
-    "start": "cross-env NODE_ENV=production dist/main.js nest start",
+    "start": "cross-env NODE_ENV=production node dist/main nest start",
     "dev": "cross-env NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

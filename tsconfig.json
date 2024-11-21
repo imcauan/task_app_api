@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"],
-      "@Helper/*": ["src/helpers/*"]
+      "@Helper/*": ["src/common/helpers/*"]
     }
   }
 }

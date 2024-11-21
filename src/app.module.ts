@@ -14,7 +14,9 @@ import { MailModule } from '@/modules/mail/mail.module';
 import { StripeModule } from '@/modules/stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
 import { ColumnModule } from '@/modules/column/column.module';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 @Module({
   imports: [
     AuthModule,

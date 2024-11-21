@@ -15,18 +15,11 @@ export class ChatService {
   ) {}
 
   async create(data: CreateChatDto) {
-    const receiverUser = await this.prisma.user.findUnique({
-      where: { id: data.receiverId },
-    });
-    const senderUser = await this.prisma.user.findUnique({
-      where: { id: data.senderId },
-    });
-
     try {
-      await this.prisma.chat.create({
+      return this.prisma.chat.create({
         data: {
           members: {
-            create: [{ ...senderUser }, { ...receiverUser }],
+            connect: [{ id: data.senderId }, { id: data.receiverId }],
           },
         },
       });
@@ -57,7 +50,6 @@ export class ChatService {
 
     try {
       const chats = await this.prisma.chat.findMany({
-        take: 10,
         include: {
           members: true,
           messages: true,

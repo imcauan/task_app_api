@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { ParamId } from '@/decorators/param-id.decorator';
+import { ParamId } from '@/common/decorators/param-id.decorator';
 import { CreateUserDto } from '@/modules/user/dtos/create-user.dto';
 import { UpdateUserDto } from '@/modules/user/dtos/update-user.dto';
 import { UserService } from '@/modules/user/user.service';

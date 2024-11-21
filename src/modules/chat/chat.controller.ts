@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { CreateChatDto } from '@/modules/chat/dtos/create-chat.dto';
 import { ChatService } from '@/modules/chat/chat.service';
-import { ParamId } from '@/decorators/param-id.decorator';
-import { AuthGuard } from '@/guards/auth.guard';
+import { ParamId } from '@/common/decorators/param-id.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
 
 @Controller('chat')
 @UseGuards(AuthGuard)

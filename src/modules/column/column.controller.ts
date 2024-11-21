@@ -1,17 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { CreateColumnDto } from '@/modules/column/dtos/create-column.dto';
 import { ColumnService } from '@/modules/column/column.service';
-import { ParamId } from '@/decorators/param-id.decorator';
+import { ParamId } from '@/common/decorators/param-id.decorator';
 import { UpdateColumnDto } from '@/modules/column/dtos/update-column.dto';
-import { UpdateColumnTasksDto } from './dtos/update-column-tasks.dto';
 
 @Controller('column')
 export class ColumnController {
@@ -20,11 +11,6 @@ export class ColumnController {
   @Post()
   async create(@Body() data: CreateColumnDto) {
     return this.columnService.create(data);
-  }
-
-  @Get('user/:id')
-  async findAllUserColumns(@Param('userId') userId: string) {
-    return this.columnService.findAllUserColumns(userId);
   }
 
   @Get(':id')
@@ -40,17 +26,6 @@ export class ColumnController {
   @Patch(':id')
   async update(@Body() data: UpdateColumnDto) {
     return this.columnService.update(data);
-  }
-
-  @Patch('user/tasks')
-  async updateColumnTasks(@Body() data: UpdateColumnTasksDto) {
-    console.log(data);
-    return this.columnService.updateColumnTasks(data);
-  }
-
-  @Patch('tasks/:id')
-  async updateColumnTask(@ParamId() id: string, data: UpdateColumnTasksDto) {
-    return this.columnService.updateColumnTasks(data);
   }
 
   @Delete(':id')

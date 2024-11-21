@@ -2,8 +2,8 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from '@/modules/auth/auth.service';
 import { AuthLoginDto } from '@/modules/auth/dtos/auth-login.dto';
 import { AuthRegisterDto } from '@/modules/auth/dtos/auth-register.dto';
-import { User } from '@/decorators/user.decorator';
-import { AuthGuard } from '@/guards/auth.guard';
+import { User } from '@/common/decorators/user.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
 import { ForgotPasswordDto } from '@/modules/auth/dtos/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dtos/reset-password.dto';
 

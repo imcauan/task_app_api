@@ -84,7 +84,11 @@ export class UserService {
           tasks: true,
           columns: {
             include: {
-              tasks: true,
+              tasks: {
+                include: {
+                  members: true,
+                },
+              },
             },
           },
         },
@@ -158,9 +162,9 @@ export class UserService {
       await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          email: email ?? user.email,
-          name: name ?? user.name,
-          password: password ?? user.password,
+          email: email || user.email,
+          name: name || user.name,
+          password: password || user.password,
         },
       });
     } catch (error) {

@@ -9,12 +9,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@/guards/auth.guard';
+import { AuthGuard } from '@/common/guards/auth.guard';
 import { CreateMessageDto } from '@/modules/messages/dtos/create-message.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { MessageService } from '@/modules/messages/message.service';
-import { ParamId } from '@/decorators/param-id.decorator';
+import { ParamId } from '@/common/decorators/param-id.decorator';
 import { UpdateMessageDto } from '@/modules/messages/dtos/update-message.dto';
 
 @Controller('message')

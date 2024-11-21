@@ -6,7 +6,6 @@ import {
 import { CreateColumnDto } from './dtos/create-column.dto';
 import { PrismaService } from 'src/infra/prisma/Prisma.service';
 import { UpdateColumnDto } from './dtos/update-column.dto';
-import { UpdateColumnTasksDto } from './dtos/update-column-tasks.dto';
 import { WorkspaceService } from '../workspace/workspace.service';
 
 @Injectable()
@@ -34,21 +33,6 @@ export class ColumnService {
       return column;
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  async findAllUserColumns(userId: string) {
-    try {
-      return this.prisma.column.findMany({
-        where: {
-          userId,
-        },
-        include: {
-          tasks: true,
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException(error);
     }
   }
 
@@ -89,32 +73,6 @@ export class ColumnService {
       });
     } catch (error) {
       throw new BadRequestException(error);
-    }
-  }
-
-  async updateColumnTasks(data: UpdateColumnTasksDto) {
-    const column = await this.findOne(data.id);
-
-    try {
-      await this.prisma.column.update({
-        where: { id: column.id },
-        data: {
-          tasks: {
-            update: data.tasks.map((task) => ({
-              where: { id: task.id },
-              data: {
-                order: task.order,
-                ...task,
-              },
-            })),
-          },
-        },
-        include: {
-          tasks: true,
-        },
-      });
-    } catch (error) {
-      console.log(error);
     }
   }
 

@@ -9,10 +9,11 @@ import {
 } from '@nestjs/common';
 import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dto';
 import { WorkspaceService } from '@/modules/workspace/workspace.service';
-import { ParamId } from '@/decorators/param-id.decorator';
+import { ParamId } from '@/common/decorators/param-id.decorator';
 import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
-import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
+import { UpdateUserColumnsDto } from '@/modules/workspace/dtos/update-user-columns.dto';
 import { DeleteUserFromWorkspaceDto } from '@/modules/workspace/dtos/delete-user-from-workspace.dto';
+import { UpdateColumnTasksDto } from '@/modules/workspace/dtos/update-column-tasks.dto';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -51,6 +52,11 @@ export class WorkspaceController {
   @Put('user')
   async updateUserColumns(@Body() data: UpdateUserColumnsDto) {
     return this.workspaceService.updateUserColumns(data);
+  }
+
+  @Patch('user/tasks')
+  async updateColumnTasks(@Body() data: UpdateColumnTasksDto) {
+    return this.workspaceService.updateColumnTasks(data);
   }
 
   @Delete(':id')

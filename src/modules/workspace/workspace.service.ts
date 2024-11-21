@@ -9,10 +9,10 @@ import { PrismaService } from '@/infra/prisma/Prisma.service';
 import { CreateWorkspaceDto } from '@/modules/workspace/dtos/create-workspace.dto';
 import { UpdateWorkspaceDto } from '@/modules/workspace/dtos/update-workspace.dto';
 import { UserService } from '@/modules/user/user.service';
-import { UpdateUserColumnsDto } from '../column/dtos/update-user-columns.dto';
+import { UpdateUserColumnsDto } from '@/modules/workspace/dtos/update-user-columns.dto';
 import { DeleteUserFromWorkspaceDto } from '@/modules/workspace/dtos/delete-user-from-workspace.dto';
+import { UpdateColumnTasksDto } from '@/modules/workspace/dtos/update-column-tasks.dto';
 
-// TODO: fix update task columns
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -48,9 +48,14 @@ export class WorkspaceService {
         where: { id },
         include: {
           members: true,
+          tasks: true,
           columns: {
             include: {
-              tasks: true,
+              tasks: {
+                include: {
+                  members: true,
+                },
+              },
             },
           },
         },
@@ -107,6 +112,31 @@ export class WorkspaceService {
       });
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async updateColumnTasks(data: UpdateColumnTasksDto) {
+    const workspace = await this.findOne(data.id);
+
+    try {
+      await this.prisma.workspace.update({
+        where: { id: workspace.id },
+        data: {
+          tasks: {
+            update: data.tasks.map((task) => ({
+              where: {
+                id: task.id,
+              },
+              data: {
+                column_id: task.columnId,
+                order: task.order,
+              },
+            })),
+          },
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 

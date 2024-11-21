@@ -23,7 +23,10 @@ export class TaskService {
       return this.prisma.task.create({
         data: {
           name: data.name,
-          user_id: data.user_id,
+          members: {
+            connect: data.members.map((member) => ({ id: member.id })),
+          },
+          workspace_id: data.workspaceId,
           order: tasks.length + 1,
           priority: data.priority,
           column_id: data.columnId,
@@ -57,39 +60,6 @@ export class TaskService {
     }
   }
 
-  async getCreatedTaskChartData(user_id: string) {
-    const chartData = [];
-    const tasks = await this.prisma.task.findMany({
-      where: {
-        user_id,
-      },
-    });
-
-    const months = {
-      0: 'January',
-      1: 'February',
-      2: 'March',
-      3: 'April',
-      4: 'May',
-      5: 'June',
-      6: 'July',
-      7: 'August',
-      8: 'September',
-      9: 'October',
-      10: 'November',
-      11: 'December',
-    };
-
-    for (let i = 0; i <= 11; i++) {
-      chartData.push({
-        month: months[i],
-        tasks: [...tasks.filter((t) => t.createdAt.getMonth() === i)].length,
-      });
-    }
-
-    return chartData;
-  }
-
   async update(id: string, data: UpdateTaskDto) {
     const task = await this.findOne(id);
 
@@ -99,7 +69,9 @@ export class TaskService {
         data: {
           name: data.name || task.name,
           description: data.description || task.description,
-          user_id: task.user_id,
+          members: {
+            set: data.members,
+          },
         },
       });
     } catch (error) {
